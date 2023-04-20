@@ -15,7 +15,7 @@ plugins {
     `java-library`
 
     // For Code coverage metrics
-    jacoco
+    id("org.jetbrains.kotlinx.kover") version "0.6.1"
 }
 
 repositories {
@@ -49,17 +49,15 @@ tasks.jar {
     }
 }
 
+koverMerged {
+    enable()
 
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
-}
+    xmlReport {
+        onCheck.set(true)
+    }
 
-tasks.jacocoTestReport {
-    dependsOn(tasks.test) // tests are required to run before generating the report
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-        csv.required.set(false)
+    htmlReport {
+        onCheck.set(true)
     }
 }
 

@@ -15,7 +15,7 @@ plugins {
     `java-library`
 
     // For Code coverage metrics
-    `jacoco`
+    jacoco
 }
 
 repositories {

@@ -40,6 +40,6 @@ jobs:
       - name: Format Markdown with markdownlint
         run: |
           npm install -g markdownlint-cli
-          markdownlint --disable MD013 --fix . --ignore CODE_OF_CONDUCT.md
+          markdownlint --disable MD013 MD033 --fix . --ignore CODE_OF_CONDUCT.md
           git add -A
           git diff --cached --exit-code

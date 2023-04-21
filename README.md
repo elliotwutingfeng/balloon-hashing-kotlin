@@ -1,7 +1,6 @@
 # Balloon Hashing
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-B125EA?&style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org)
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/elliotwutingfeng/balloon-hashing-kotlin?color=bright-green&logo=codecov&style=for-the-badge&token=hRtEp0cX8t)](https://codecov.io/gh/elliotwutingfeng/balloon-hashing-kotlin)
 
 [![GitHub license](https://img.shields.io/badge/LICENSE-BSD--3--CLAUSE-GREEN?style=for-the-badge)](LICENSE)
 

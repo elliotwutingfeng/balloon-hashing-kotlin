@@ -25,10 +25,10 @@ jobs:
       - name: Run build with Gradle Wrapper
         run: ./gradlew build
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: '**/report.xml'
+      - name: Test and publish coverage
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: ./gradlew test jacocoTestReport coverallsJacoco
 
   format-markdown:
     runs-on: ubuntu-latest

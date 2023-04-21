@@ -1,7 +1,7 @@
 # Balloon Hashing
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-B125EA?&style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org)
-[![Coveralls](https://img.shields.io/coverallsCoverage/github/elliotwutingfeng/balloon-hashing-kotlin?logo=coveralls&style=for-the-badge)](https://coveralls.io/github/elliotwutingfeng/balloon-hashing-kotlin?branch=main)
+[![Coveralls](https://img.shields.io/coverallsCoverage/github/elliotwutingfeng/balloon-hashing-kotlin?logo=coveralls&style=for-the-badge)](https://coveralls.io/github/elliotwutingfeng/balloon-hashing-kotlin?branch=main)<img src='https://coveralls.io/repos/github/elliotwutingfeng/balloon-hashing-kotlin/badge.svg?branch=main' alt='' width="0" height="0" />
 
 [![GitHub license](https://img.shields.io/badge/LICENSE-BSD--3--CLAUSE-GREEN?style=for-the-badge)](LICENSE)
 

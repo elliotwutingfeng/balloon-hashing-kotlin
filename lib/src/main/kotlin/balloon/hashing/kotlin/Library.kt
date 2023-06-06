@@ -85,8 +85,8 @@ class BalloonHashing(private val hashType: HashType) {
      * @param size Byte size. Defaults to 8.
      * @return Byte array representation of number [data] in little endian.
      */
-    private fun numberToByteArray(data: Number, size: Int = 8): ByteArray =
-            ByteArray(size) { i -> (data.toLong() shr (i * 8)).toByte() }
+    private fun numberToByteArray(data: Number, size: UInt = 8u): ByteArray =
+            ByteArray(size.toInt()) { i -> (data.toLong() shr (i * 8)).toByte() }
 
     /**
      * Concatenate all the arguments and hash the result using the algorithm specified by [hashType]
@@ -111,11 +111,11 @@ class BalloonHashing(private val hashType: HashType) {
      * @param spaceCost The size of the buffer.
      * @return Counter used in a security proof (read the paper).
      */
-    private fun expand(buf: ArrayList<ByteArray>, cnt: Int, spaceCost: Int): Int {
+    private fun expand(buf: ArrayList<ByteArray>, cnt: UInt, spaceCost: UInt): UInt {
         var newcnt = cnt
-        for (s in 1 until spaceCost) {
-            buf.add(hashFunc(numberToByteArray(newcnt), buf[s - 1]))
-            newcnt += 1
+        for (s in 1 until spaceCost.toInt()) {
+            buf.add(hashFunc(numberToByteArray(newcnt.toInt()), buf[s - 1]))
+            newcnt += 1u
         }
         return newcnt
     }
@@ -134,23 +134,23 @@ class BalloonHashing(private val hashType: HashType) {
      */
     private fun mix(
             buf: ArrayList<ByteArray>,
-            cnt: Int,
-            delta: Int,
+            cnt: UInt,
+            delta: UInt,
             salt: ByteArray,
-            spaceCost: Int,
-            timeCost: Int
+            spaceCost: UInt,
+            timeCost: UInt
     ) {
         var newcnt = cnt
-        for (t in 0 until timeCost) {
-            for (s in 0 until spaceCost) {
+        for (t in 0 until timeCost.toInt()) {
+            for (s in 0 until spaceCost.toInt()) {
                 buf[s] =
                         hashFunc(
-                                numberToByteArray(newcnt),
+                                numberToByteArray(newcnt.toInt()),
                                 if (s == 0) extract(buf) else buf[s - 1],
                                 buf[s]
                         )
-                newcnt += 1
-                for (i in 0 until delta) {
+                newcnt += 1u
+                for (i in 0 until delta.toInt()) {
                     val idxBlock =
                             hashFunc(
                                     numberToByteArray(t),
@@ -159,12 +159,12 @@ class BalloonHashing(private val hashType: HashType) {
                             )
                     val other =
                             byteArrayMod(
-                                    hashFunc(numberToByteArray(newcnt), salt, idxBlock),
-                                    spaceCost
+                                    hashFunc(numberToByteArray(newcnt.toInt()), salt, idxBlock),
+                                    spaceCost.toInt()
                             )
-                    newcnt += 1
-                    buf[s] = hashFunc(numberToByteArray(newcnt), buf[s], buf[other])
-                    newcnt += 1
+                    newcnt += 1u
+                    buf[s] = hashFunc(numberToByteArray(newcnt.toInt()), buf[s], buf[other])
+                    newcnt += 1u
                 }
             }
         }
@@ -195,9 +195,9 @@ class BalloonHashing(private val hashType: HashType) {
     fun balloon(
             password: String,
             salt: String,
-            spaceCost: Int,
-            timeCost: Int,
-            delta: Int = 3
+            spaceCost: UInt,
+            timeCost: UInt,
+            delta: UInt = 3u
     ): ByteArray {
         return _balloon(password, salt.toByteArray(), spaceCost, timeCost, delta)
     }
@@ -215,13 +215,13 @@ class BalloonHashing(private val hashType: HashType) {
     private fun _balloon(
             password: String,
             salt: ByteArray,
-            spaceCost: Int,
-            timeCost: Int,
-            delta: Int = 3
+            spaceCost: UInt,
+            timeCost: UInt,
+            delta: UInt = 3u
     ): ByteArray {
         val buf = ArrayList<ByteArray>()
         buf.add(hashFunc(numberToByteArray(0), password.toByteArray(), salt))
-        val cnt = expand(buf, 1, spaceCost)
+        val cnt = expand(buf, 1u, spaceCost)
         mix(buf, cnt, delta, salt, spaceCost, timeCost)
         return extract(buf)
     }
@@ -235,9 +235,9 @@ class BalloonHashing(private val hashType: HashType) {
      * @return The hash as hex.
      */
     fun balloonHash(password: String, salt: String): String {
-        val delta = 4
-        val timeCost = 20
-        val spaceCost = 16
+        val delta = 4u
+        val timeCost = 20u
+        val spaceCost = 16u
         return HexFormat.of().formatHex(balloon(password, salt, spaceCost, timeCost, delta = delta))
     }
 
@@ -257,14 +257,14 @@ class BalloonHashing(private val hashType: HashType) {
     fun balloonM(
             password: String,
             salt: String,
-            spaceCost: Int,
-            timeCost: Int,
-            parallelCost: Int,
-            delta: Int = 3
+            spaceCost: UInt,
+            timeCost: UInt,
+            parallelCost: UInt,
+            delta: UInt = 3u
     ): ByteArray {
-        check(parallelCost >= 1) { "parallelCost must have minimum value of 1" }
+        check(parallelCost >= 1u) { "parallelCost must have minimum value of 1" }
         val output =
-                IntStream.range(0, parallelCost)
+                IntStream.range(0, parallelCost.toInt())
                         .parallel()
                         .mapToObj { p ->
                             run {
@@ -295,10 +295,10 @@ class BalloonHashing(private val hashType: HashType) {
      * @return The hash as hex.
      */
     fun balloonMHash(password: String, salt: String): String {
-        val delta = 4
-        val timeCost = 20
-        val spaceCost = 16
-        val parallelCost = 4
+        val delta = 4u
+        val timeCost = 20u
+        val spaceCost = 16u
+        val parallelCost = 4u
         return HexFormat.of()
                 .formatHex(
                         balloonM(password, salt, spaceCost, timeCost, parallelCost, delta = delta)
@@ -321,9 +321,9 @@ class BalloonHashing(private val hashType: HashType) {
             hash: String,
             password: String,
             salt: String,
-            spaceCost: Int,
-            timeCost: Int,
-            delta: Int = 3
+            spaceCost: UInt,
+            timeCost: UInt,
+            delta: UInt = 3u
     ): Boolean {
         check(hash.length % 2 == 0) { "Must have an even length" }
         return MessageDigest.isEqual(
@@ -349,11 +349,12 @@ class BalloonHashing(private val hashType: HashType) {
             hash: String,
             password: String,
             salt: String,
-            spaceCost: Int,
-            timeCost: Int,
-            parallelCost: Int,
-            delta: Int = 3
+            spaceCost: UInt,
+            timeCost: UInt,
+            parallelCost: UInt,
+            delta: UInt = 3u
     ): Boolean {
+        check(parallelCost >= 1u) { "parallelCost must have minimum value of 1" }
         check(hash.length % 2 == 0) { "Must have an even length" }
         return MessageDigest.isEqual(
                 balloonM(password, salt, spaceCost, timeCost, parallelCost, delta),

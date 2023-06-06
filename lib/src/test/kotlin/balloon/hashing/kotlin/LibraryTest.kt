@@ -18,40 +18,40 @@ class BalloonHashingTest {
                                                 mapOf(
                                                                 "password" to "hunter42",
                                                                 "salt" to "examplesalt",
-                                                                "spaceCost" to 1024,
-                                                                "timeCost" to 3,
+                                                                "spaceCost" to 1024u,
+                                                                "timeCost" to 3u,
                                                                 "output" to
                                                                                 "716043dff777b44aa7b88dcbab12c078abecfac9d289c5b5195967aa63440dfb"
                                                 ),
                                                 mapOf(
                                                                 "password" to "",
                                                                 "salt" to "salt",
-                                                                "spaceCost" to 3,
-                                                                "timeCost" to 3,
+                                                                "spaceCost" to 3u,
+                                                                "timeCost" to 3u,
                                                                 "output" to
                                                                                 "5f02f8206f9cd212485c6bdf85527b698956701ad0852106f94b94ee94577378",
                                                 ),
                                                 mapOf(
                                                                 "password" to "password",
                                                                 "salt" to "",
-                                                                "spaceCost" to 3,
-                                                                "timeCost" to 3,
+                                                                "spaceCost" to 3u,
+                                                                "timeCost" to 3u,
                                                                 "output" to
                                                                                 "20aa99d7fe3f4df4bd98c655c5480ec98b143107a331fd491deda885c4d6a6cc",
                                                 ),
                                                 mapOf(
                                                                 "password" to "\u0000",
                                                                 "salt" to "\u0000",
-                                                                "spaceCost" to 3,
-                                                                "timeCost" to 3,
+                                                                "spaceCost" to 3u,
+                                                                "timeCost" to 3u,
                                                                 "output" to
                                                                                 "4fc7e302ffa29ae0eac31166cee7a552d1d71135f4e0da66486fb68a749b73a4",
                                                 ),
                                                 mapOf(
                                                                 "password" to "password",
                                                                 "salt" to "salt",
-                                                                "spaceCost" to 1,
-                                                                "timeCost" to 1,
+                                                                "spaceCost" to 1u,
+                                                                "timeCost" to 1u,
                                                                 "output" to
                                                                                 "eefda4a8a75b461fa389c1dcfaf3e9dfacbc26f81f22e6f280d15cc18c417545",
                                                 ),
@@ -59,15 +59,15 @@ class BalloonHashingTest {
                 val bh = BalloonHashing(HashType.SHA256)
                 assertFailsWith<IllegalStateException>(
                                 message = "Must have an even length",
-                                block = { bh.verify("0", "password", "salt", 1, 1) }
+                                block = { bh.verify("0", "password", "salt", 1u, 1u) }
                 )
                 for (testVector in testVectors) {
                         val digest =
                                         bh.balloon(
                                                         testVector["password"] as String,
                                                         testVector["salt"] as String,
-                                                        testVector["spaceCost"] as Int,
-                                                        testVector["timeCost"] as Int
+                                                        testVector["spaceCost"] as UInt,
+                                                        testVector["timeCost"] as UInt
                                         )
                         assertEquals(
                                         HexFormat.of().formatHex(digest),
@@ -88,9 +88,9 @@ class BalloonHashingTest {
                                                                                         testVector[
                                                                                                         "salt"] as
                                                                                                         String,
-                                                                                        16,
-                                                                                        20,
-                                                                                        4
+                                                                                        16u,
+                                                                                        20u,
+                                                                                        4u
                                                                         )
                                                         )
                         )
@@ -99,8 +99,8 @@ class BalloonHashingTest {
                                                         testVector["output"] as String,
                                                         testVector["password"] as String,
                                                         testVector["salt"] as String,
-                                                        testVector["spaceCost"] as Int,
-                                                        testVector["timeCost"] as Int
+                                                        testVector["spaceCost"] as UInt,
+                                                        testVector["timeCost"] as UInt
                                         )
                         )
                         assertFalse(
@@ -108,8 +108,8 @@ class BalloonHashingTest {
                                                         "0".repeat(64),
                                                         testVector["password"] as String,
                                                         testVector["salt"] as String,
-                                                        testVector["spaceCost"] as Int,
-                                                        testVector["timeCost"] as Int
+                                                        testVector["spaceCost"] as UInt,
+                                                        testVector["timeCost"] as UInt
                                         )
                         )
                 }
@@ -121,72 +121,72 @@ class BalloonHashingTest {
                                                 mapOf(
                                                                 "password" to "hunter42",
                                                                 "salt" to "examplesalt",
-                                                                "spaceCost" to 1024,
-                                                                "timeCost" to 3,
-                                                                "parallelCost" to 4,
+                                                                "spaceCost" to 1024u,
+                                                                "timeCost" to 3u,
+                                                                "parallelCost" to 4u,
                                                                 "output" to
                                                                                 "1832bd8e5cbeba1cb174a13838095e7e66508e9bf04c40178990adbc8ba9eb6f"
                                                 ),
                                                 mapOf(
                                                                 "password" to "",
                                                                 "salt" to "salt",
-                                                                "spaceCost" to 3,
-                                                                "timeCost" to 3,
-                                                                "parallelCost" to 2,
+                                                                "spaceCost" to 3u,
+                                                                "timeCost" to 3u,
+                                                                "parallelCost" to 2u,
                                                                 "output" to
                                                                                 "f8767fe04059cef67b4427cda99bf8bcdd983959dbd399a5e63ea04523716c23",
                                                 ),
                                                 mapOf(
                                                                 "password" to "password",
                                                                 "salt" to "",
-                                                                "spaceCost" to 3,
-                                                                "timeCost" to 3,
-                                                                "parallelCost" to 3,
+                                                                "spaceCost" to 3u,
+                                                                "timeCost" to 3u,
+                                                                "parallelCost" to 3u,
                                                                 "output" to
                                                                                 "bcad257eff3d1090b50276514857e60db5d0ec484129013ef3c88f7d36e438d6",
                                                 ),
                                                 mapOf(
                                                                 "password" to "password",
                                                                 "salt" to "",
-                                                                "spaceCost" to 3,
-                                                                "timeCost" to 3,
-                                                                "parallelCost" to 1,
+                                                                "spaceCost" to 3u,
+                                                                "timeCost" to 3u,
+                                                                "parallelCost" to 1u,
                                                                 "output" to
                                                                                 "498344ee9d31baf82cc93ebb3874fe0b76e164302c1cefa1b63a90a69afb9b4d",
                                                 ),
                                                 mapOf(
                                                                 "password" to "\u0000",
                                                                 "salt" to "\u0000",
-                                                                "spaceCost" to 3,
-                                                                "timeCost" to 3,
-                                                                "parallelCost" to 4,
+                                                                "spaceCost" to 3u,
+                                                                "timeCost" to 3u,
+                                                                "parallelCost" to 4u,
                                                                 "output" to
                                                                                 "8a665611e40710ba1fd78c181549c750f17c12e423c11930ce997f04c7153e0c",
                                                 ),
                                                 mapOf(
                                                                 "password" to "\u0000",
                                                                 "salt" to "\u0000",
-                                                                "spaceCost" to 3,
-                                                                "timeCost" to 3,
-                                                                "parallelCost" to 1,
+                                                                "spaceCost" to 3u,
+                                                                "timeCost" to 3u,
+                                                                "parallelCost" to 1u,
                                                                 "output" to
                                                                                 "d9e33c683451b21fb3720afbd78bf12518c1d4401fa39f054b052a145c968bb1",
                                                 ),
                                                 mapOf(
                                                                 "password" to "password",
                                                                 "salt" to "salt",
-                                                                "spaceCost" to 1,
-                                                                "timeCost" to 1,
-                                                                "parallelCost" to 16,
+                                                                "spaceCost" to 1u,
+                                                                "timeCost" to 1u,
+                                                                "parallelCost" to 16u,
                                                                 "output" to
                                                                                 "a67b383bb88a282aef595d98697f90820adf64582a4b3627c76b7da3d8bae915",
                                                 ),
                                                 mapOf(
                                                                 "password" to "password",
                                                                 "salt" to "salt",
-                                                                "spaceCost" to 1,
-                                                                "timeCost" to 1,
-                                                                "parallelCost" to 1,
+                                                                "spaceCost" to 1u,
+                                                                "timeCost" to 1u,
+                                                                "parallelCost" to 1u,
                                                                 "output" to
                                                                                 "97a11df9382a788c781929831d409d3599e0b67ab452ef834718114efdcd1c6d",
                                                 ),
@@ -194,20 +194,20 @@ class BalloonHashingTest {
                 val bh = BalloonHashing(HashType.SHA256)
                 assertFailsWith<IllegalStateException>(
                                 message = "Must have an even length",
-                                block = { bh.verifyM("0", "password", "salt", 1, 1, 1) }
+                                block = { bh.verifyM("0", "password", "salt", 1u, 1u, 1u) }
                 )
                 assertFailsWith<IllegalStateException>(
                                 message = "parallelCost must have minimum value of 1",
-                                block = { bh.verifyM("0", "password", "salt", 1, 1, 0) }
+                                block = { bh.verifyM("0", "password", "salt", 1u, 1u, 0u) }
                 )
                 for (testVector in testVectors) {
                         val digest =
                                         bh.balloonM(
                                                         testVector["password"] as String,
                                                         testVector["salt"] as String,
-                                                        testVector["spaceCost"] as Int,
-                                                        testVector["timeCost"] as Int,
-                                                        testVector["parallelCost"] as Int
+                                                        testVector["spaceCost"] as UInt,
+                                                        testVector["timeCost"] as UInt,
+                                                        testVector["parallelCost"] as UInt
                                         )
                         assertEquals(
                                         HexFormat.of().formatHex(digest),
@@ -228,10 +228,10 @@ class BalloonHashingTest {
                                                                                         testVector[
                                                                                                         "salt"] as
                                                                                                         String,
-                                                                                        16,
-                                                                                        20,
-                                                                                        4,
-                                                                                        4
+                                                                                        16u,
+                                                                                        20u,
+                                                                                        4u,
+                                                                                        4u
                                                                         )
                                                         )
                         )
@@ -240,9 +240,9 @@ class BalloonHashingTest {
                                                         testVector["output"] as String,
                                                         testVector["password"] as String,
                                                         testVector["salt"] as String,
-                                                        testVector["spaceCost"] as Int,
-                                                        testVector["timeCost"] as Int,
-                                                        testVector["parallelCost"] as Int
+                                                        testVector["spaceCost"] as UInt,
+                                                        testVector["timeCost"] as UInt,
+                                                        testVector["parallelCost"] as UInt
                                         )
                         )
                         assertFalse(
@@ -250,9 +250,9 @@ class BalloonHashingTest {
                                                         "0".repeat(64),
                                                         testVector["password"] as String,
                                                         testVector["salt"] as String,
-                                                        testVector["spaceCost"] as Int,
-                                                        testVector["timeCost"] as Int,
-                                                        testVector["parallelCost"] as Int
+                                                        testVector["spaceCost"] as UInt,
+                                                        testVector["timeCost"] as UInt,
+                                                        testVector["parallelCost"] as UInt
                                         )
                         )
                 }

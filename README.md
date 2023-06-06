@@ -50,9 +50,9 @@ val password = "buildmeupbuttercup"
 val salt = "JqMcHqUcjinFhQKJ"
 println(balloonHash(password, salt)) // OUTPUT: 2ec8d833db5f88e584ab793950ecfb21657a3816edea8d9e73ea23c13ba2b740
 
-val delta = 5
-val timeCost = 18
-val spaceCost = 24
+val delta = 5u
+val timeCost = 18u
+val spaceCost = 24u
 println(HexFormat.of().formatHex(balloon(password, salt, spaceCost, timeCost, delta)))
 // OUTPUT: 69f86890cef40a7ec5f70daff1ce8e2cde233a15bffa785e7efdb5143af51bfb
 ```

@@ -7,7 +7,7 @@ import java.io.ByteArrayOutputStream
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.HexFormat
-import java.util.stream.IntStream;
+import java.util.stream.IntStream
 
 /**
  * Standard cryptographic hash functions.
@@ -16,7 +16,19 @@ import java.util.stream.IntStream;
  * @constructor Creates an empty Hash type.
  */
 enum class HashType(val acronym: String) {
-    MD5("MD5"), SHA1("SHA-1"), SHA224("SHA-224"), SHA256("SHA-256"), SHA384("SHA-384"), SHA512("SHA-512")
+    MD2("MD2"),
+    MD5("MD5"),
+    SHA1("SHA-1"),
+    SHA224("SHA-224"),
+    SHA256("SHA-256"),
+    SHA384("SHA-384"),
+    SHA512("SHA-512"),
+    SHA512_224("SHA-512/224"),
+    SHA512_256("SHA-512/256"),
+    SHA3_224("SHA3-224"),
+    SHA3_256("SHA3-256"),
+    SHA3_384("SHA3-384"),
+    SHA3_512("SHA3-512")
 }
 
 /**
@@ -58,10 +70,11 @@ class BalloonHashing(private val hashType: HashType) {
         // Check if MSB of buffer's MSB is set, if so
         // add byteArrayOf(0) to keep the sign positive
         val reversedBuffer = buffer.reversed().toByteArray()
-        val m = BigInteger(
-            (if (reversedBuffer[0].toInt() and 128 > 0) byteArrayOf(0)
-            else byteArrayOf()) + reversedBuffer
-        )
+        val m =
+                BigInteger(
+                        (if (reversedBuffer[0].toInt() and 128 > 0) byteArrayOf(0)
+                        else byteArrayOf()) + reversedBuffer
+                )
         return m.mod(divisor.toBigInteger()).toInt()
     }
 
@@ -73,10 +86,11 @@ class BalloonHashing(private val hashType: HashType) {
      * @return Byte array representation of number [data] in little endian.
      */
     private fun numberToByteArray(data: Number, size: Int = 8): ByteArray =
-        ByteArray(size) { i -> (data.toLong() shr (i * 8)).toByte() }
+            ByteArray(size) { i -> (data.toLong() shr (i * 8)).toByte() }
 
     /**
-     * Concatenate all the arguments and hash the result using the algorithm specified by [hashType].
+     * Concatenate all the arguments and hash the result using the algorithm specified by [hashType]
+     * .
      *
      * @param args Arguments to concatenate.
      * @return The hashed string.
@@ -88,10 +102,9 @@ class BalloonHashing(private val hashType: HashType) {
     }
 
     /**
-     * First step of the algorithm. Fill up a buffer with
-     * pseudorandom bytes derived from the password and salt
-     * by computing repeatedly the hash function on a combination
-     * of the password and the previous hash.
+     * First step of the algorithm. Fill up a buffer with pseudorandom bytes derived from the
+     * password and salt by computing repeatedly the hash function on a combination of the password
+     * and the previous hash.
      *
      * @param buf A list of hashes as bytes.
      * @param cnt Used in a security proof (read the paper).
@@ -108,11 +121,9 @@ class BalloonHashing(private val hashType: HashType) {
     }
 
     /**
-     * Second step of the algorithm. Mix [timeCost] number
-     * of times the pseudorandom bytes in the buffer. At each
-     * step in the for loop, update the nth block to be
-     * the hash of the n-1th block, the nth block, and [delta]
-     * other blocks chosen at random from the buffer [buf].
+     * Second step of the algorithm. Mix [timeCost] number of times the pseudorandom bytes in the
+     * buffer. At each step in the for loop, update the nth block to be the hash of the n-1th block,
+     * the nth block, and [delta] other blocks chosen at random from the buffer [buf].
      *
      * @param buf A list of hashes as bytes.
      * @param cnt Used in a security proof (read the paper).
@@ -121,15 +132,36 @@ class BalloonHashing(private val hashType: HashType) {
      * @param spaceCost The size of the buffer.
      * @param timeCost Number of rounds to mix.
      */
-    private fun mix(buf: ArrayList<ByteArray>, cnt: Int, delta: Int, salt: ByteArray, spaceCost: Int, timeCost: Int) {
+    private fun mix(
+            buf: ArrayList<ByteArray>,
+            cnt: Int,
+            delta: Int,
+            salt: ByteArray,
+            spaceCost: Int,
+            timeCost: Int
+    ) {
         var newcnt = cnt
         for (t in 0 until timeCost) {
             for (s in 0 until spaceCost) {
-                buf[s] = hashFunc(numberToByteArray(newcnt), if (s == 0) extract(buf) else buf[s - 1], buf[s])
+                buf[s] =
+                        hashFunc(
+                                numberToByteArray(newcnt),
+                                if (s == 0) extract(buf) else buf[s - 1],
+                                buf[s]
+                        )
                 newcnt += 1
                 for (i in 0 until delta) {
-                    val idxBlock = hashFunc(numberToByteArray(t), numberToByteArray(s), numberToByteArray(i))
-                    val other = byteArrayMod(hashFunc(numberToByteArray(newcnt), salt, idxBlock), spaceCost)
+                    val idxBlock =
+                            hashFunc(
+                                    numberToByteArray(t),
+                                    numberToByteArray(s),
+                                    numberToByteArray(i)
+                            )
+                    val other =
+                            byteArrayMod(
+                                    hashFunc(numberToByteArray(newcnt), salt, idxBlock),
+                                    spaceCost
+                            )
                     newcnt += 1
                     buf[s] = hashFunc(numberToByteArray(newcnt), buf[s], buf[other])
                     newcnt += 1
@@ -149,11 +181,9 @@ class BalloonHashing(private val hashType: HashType) {
     }
 
     /**
-     * Main function that collects all the substeps. As
-     * previously mentioned, first [expand], then [mix], and
-     * finally [extract]. Note the result is returned as bytes,
-     * for a more friendly function with default values
-     * that returns a hex string, see the function [balloonHash].
+     * Main function that collects all the substeps. As previously mentioned, first [expand], then
+     * [mix], and finally [extract]. Note the result is returned as bytes, for a more friendly
+     * function with default values that returns a hex string, see the function [balloonHash].
      *
      * @param password The main string to hash.
      * @param salt A user defined random value for security.
@@ -162,7 +192,13 @@ class BalloonHashing(private val hashType: HashType) {
      * @param delta Number of random blocks to mix with. Defaults to 3.
      * @return A series of bytes, the hash.
      */
-    fun balloon(password: String, salt: String, spaceCost: Int, timeCost: Int, delta: Int = 3): ByteArray {
+    fun balloon(
+            password: String,
+            salt: String,
+            spaceCost: Int,
+            timeCost: Int,
+            delta: Int = 3
+    ): ByteArray {
         return _balloon(password, salt.toByteArray(), spaceCost, timeCost, delta)
     }
 
@@ -176,7 +212,13 @@ class BalloonHashing(private val hashType: HashType) {
      * @param delta Number of random blocks to mix with. Defaults to 3.
      * @return A series of bytes, the hash.
      */
-    private fun _balloon(password: String, salt: ByteArray, spaceCost: Int, timeCost: Int, delta: Int = 3): ByteArray {
+    private fun _balloon(
+            password: String,
+            salt: ByteArray,
+            spaceCost: Int,
+            timeCost: Int,
+            delta: Int = 3
+    ): ByteArray {
         val buf = ArrayList<ByteArray>()
         buf.add(hashFunc(numberToByteArray(0), password.toByteArray(), salt))
         val cnt = expand(buf, 1, spaceCost)
@@ -185,8 +227,8 @@ class BalloonHashing(private val hashType: HashType) {
     }
 
     /**
-     * A more friendly client function that just takes
-     * a [password] and a [salt] and outputs the hash as a hex string.
+     * A more friendly client function that just takes a [password] and a [salt] and outputs the
+     * hash as a hex string.
      *
      * @param password The main string to hash.
      * @param salt A user defined random value for security.
@@ -200,9 +242,9 @@ class BalloonHashing(private val hashType: HashType) {
     }
 
     /**
-     * M-core variant of the Balloon hashing algorithm. Note the result
-     * is returned as bytes, for a more friendly function with default
-     * values that returns a hex string, see the function [balloonMHash].
+     * M-core variant of the Balloon hashing algorithm. Note the result is returned as bytes, for a
+     * more friendly function with default values that returns a hex string, see the function
+     * [balloonMHash].
      *
      * @param password The main string to hash.
      * @param salt A user defined random value for security.
@@ -212,29 +254,41 @@ class BalloonHashing(private val hashType: HashType) {
      * @param delta Number of random blocks to mix with. Defaults to 3.
      * @return A series of bytes, the hash.
      */
-    fun balloonM(password: String, salt: String, spaceCost: Int, timeCost: Int, parallelCost: Int, delta: Int = 3): ByteArray {
-        val output = IntStream.range(0, parallelCost)
-        .parallel()
-        .mapToObj{p -> run {
-            val parallelSalt = salt.toByteArray() + numberToByteArray(p+1)
-            _balloon(password, parallelSalt, spaceCost, timeCost, delta)
-        }}
-        .reduce{a,b -> run {
-            val buf = ByteArray(a.size)
-            for (i in 0 until a.size) {
-              buf[i] = (a[i].toUByte() xor b[i].toUByte()).toByte()
-            }
-            buf
-        }}
-        .orElseThrow {IllegalArgumentException()}
+    fun balloonM(
+            password: String,
+            salt: String,
+            spaceCost: Int,
+            timeCost: Int,
+            parallelCost: Int,
+            delta: Int = 3
+    ): ByteArray {
+        check(parallelCost >= 1) { "parallelCost must have minimum value of 1" }
+        val output =
+                IntStream.range(0, parallelCost)
+                        .parallel()
+                        .mapToObj { p ->
+                            run {
+                                val parallelSalt = salt.toByteArray() + numberToByteArray(p + 1)
+                                _balloon(password, parallelSalt, spaceCost, timeCost, delta)
+                            }
+                        }
+                        .reduce { a, b ->
+                            run {
+                                val buf = ByteArray(a.size)
+                                for (i in 0 until a.size) {
+                                    buf[i] = (a[i].toUByte() xor b[i].toUByte()).toByte()
+                                }
+                                buf
+                            }
+                        }
+                        .orElseThrow { IllegalArgumentException() }
 
         return hashFunc(password.toByteArray(), salt.toByteArray(), output)
     }
 
     /**
-     * A more friendly client function that just takes
-     * a [password] and a [salt] and outputs the hash as a hex string.
-     * This uses the M-core variant of the Balloon hashing algorithm.
+     * A more friendly client function that just takes a [password] and a [salt] and outputs the
+     * hash as a hex string. This uses the M-core variant of the Balloon hashing algorithm.
      *
      * @param password The main string to hash.
      * @param salt A user defined random value for security.
@@ -245,12 +299,15 @@ class BalloonHashing(private val hashType: HashType) {
         val timeCost = 20
         val spaceCost = 16
         val parallelCost = 4
-        return HexFormat.of().formatHex(balloonM(password, salt, spaceCost, timeCost, parallelCost, delta = delta))
+        return HexFormat.of()
+                .formatHex(
+                        balloonM(password, salt, spaceCost, timeCost, parallelCost, delta = delta)
+                )
     }
 
     /**
-     * Verify that [hash] matches [password] when hashed with [salt], [spaceCost],
-     * [timeCost], and [delta].
+     * Verify that [hash] matches [password] when hashed with [salt], [spaceCost], [timeCost], and
+     * [delta].
      *
      * @param hash The hash to check against.
      * @param password The password to verify.
@@ -260,15 +317,24 @@ class BalloonHashing(private val hashType: HashType) {
      * @param delta Number of random blocks to mix with. Defaults to 3.
      * @return true if password matches hash, otherwise false.
      */
-    fun verify(hash: String, password: String, salt: String, spaceCost: Int, timeCost: Int, delta: Int = 3): Boolean {
+    fun verify(
+            hash: String,
+            password: String,
+            salt: String,
+            spaceCost: Int,
+            timeCost: Int,
+            delta: Int = 3
+    ): Boolean {
         check(hash.length % 2 == 0) { "Must have an even length" }
-        return MessageDigest.isEqual(balloon(password, salt, spaceCost, timeCost, delta), hash.decodeHex())
+        return MessageDigest.isEqual(
+                balloon(password, salt, spaceCost, timeCost, delta),
+                hash.decodeHex()
+        )
     }
 
     /**
-     * Verify that [hash] matches [password] when hashed with [salt], [spaceCost],
-     * [timeCost], [parallel cost], and [delta].
-     * This uses the M-core variant of the Balloon hashing algorithm.
+     * Verify that [hash] matches [password] when hashed with [salt], [spaceCost], [timeCost],
+     * [parallel cost], and [delta]. This uses the M-core variant of the Balloon hashing algorithm.
      *
      * @param hash The hash to check against.
      * @param password The password to verify.
@@ -279,8 +345,19 @@ class BalloonHashing(private val hashType: HashType) {
      * @param delta Number of random blocks to mix with. Defaults to 3.
      * @return true if password matches hash, otherwise false.
      */
-    fun verifyM(hash: String, password: String, salt: String, spaceCost: Int, timeCost: Int, parallelCost: Int, delta: Int = 3): Boolean {
+    fun verifyM(
+            hash: String,
+            password: String,
+            salt: String,
+            spaceCost: Int,
+            timeCost: Int,
+            parallelCost: Int,
+            delta: Int = 3
+    ): Boolean {
         check(hash.length % 2 == 0) { "Must have an even length" }
-        return MessageDigest.isEqual(balloonM(password, salt, spaceCost, timeCost, parallelCost, delta), hash.decodeHex())
+        return MessageDigest.isEqual(
+                balloonM(password, salt, spaceCost, timeCost, parallelCost, delta),
+                hash.decodeHex()
+        )
     }
 }

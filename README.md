@@ -37,8 +37,8 @@ In the last step, the extraction, the system outputs as the hash the last elemen
 ## Requirements
 
 * OpenJDK 17
-* Kotlin 1.8.10
-* Gradle 8.0.2
+* Kotlin 1.8.21
+* Gradle 8.1.1
 
 ## Usage
 

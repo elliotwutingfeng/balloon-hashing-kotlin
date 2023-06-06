@@ -87,4 +87,112 @@ class BalloonHashingTest {
             )
         }
     }
+    @Test
+    fun balloonMReturnsCorrectHash() {
+        val testVectors = arrayOf(
+            mapOf(
+                "password" to "hunter42",
+                "salt" to "examplesalt",
+                "spaceCost" to 1024,
+                "timeCost" to 3,
+                "parallelCost" to 4,
+                "output" to "1832bd8e5cbeba1cb174a13838095e7e66508e9bf04c40178990adbc8ba9eb6f"
+            ),
+            mapOf(
+                "password" to "",
+                "salt" to "salt",
+                "spaceCost" to 3,
+                "timeCost" to 3,
+                "parallelCost" to 2,
+                "output" to "f8767fe04059cef67b4427cda99bf8bcdd983959dbd399a5e63ea04523716c23",
+            ),
+            mapOf(
+                "password" to "password",
+                "salt" to "",
+                "spaceCost" to 3,
+                "timeCost" to 3,
+                "parallelCost" to 3,
+                "output" to "bcad257eff3d1090b50276514857e60db5d0ec484129013ef3c88f7d36e438d6",
+            ),
+            mapOf(
+                "password" to "password",
+                "salt" to "",
+                "spaceCost" to 3,
+                "timeCost" to 3,
+                "parallelCost" to 1,
+                "output" to "498344ee9d31baf82cc93ebb3874fe0b76e164302c1cefa1b63a90a69afb9b4d",
+            ),
+            mapOf(
+                "password" to "\u0000",
+                "salt" to "\u0000",
+                "spaceCost" to 3,
+                "timeCost" to 3,
+                "parallelCost" to 4,
+                "output" to "8a665611e40710ba1fd78c181549c750f17c12e423c11930ce997f04c7153e0c",
+            ),
+            mapOf(
+                "password" to "\u0000",
+                "salt" to "\u0000",
+                "spaceCost" to 3,
+                "timeCost" to 3,
+                "parallelCost" to 1,
+                "output" to "d9e33c683451b21fb3720afbd78bf12518c1d4401fa39f054b052a145c968bb1",
+            ),
+            mapOf(
+                "password" to "password",
+                "salt" to "salt",
+                "spaceCost" to 1,
+                "timeCost" to 1,
+                "parallelCost" to 16,
+                "output" to "a67b383bb88a282aef595d98697f90820adf64582a4b3627c76b7da3d8bae915",
+            ),
+            mapOf(
+                "password" to "password",
+                "salt" to "salt",
+                "spaceCost" to 1,
+                "timeCost" to 1,
+                "parallelCost" to 1,
+                "output" to "97a11df9382a788c781929831d409d3599e0b67ab452ef834718114efdcd1c6d",
+            ),
+        )
+        val bh = BalloonHashing(HashType.SHA256)
+        assertFailsWith<IllegalStateException>(message = "Must have an even length", block = {
+            bh.verifyM("0", "password", "salt", 1, 1, 1)
+        })
+        for (testVector in testVectors) {
+            val digest = bh.balloonM(
+                testVector["password"] as String,
+                testVector["salt"] as String,
+                testVector["spaceCost"] as Int,
+                testVector["timeCost"] as Int,
+                testVector["parallelCost"] as Int
+            )
+            assertEquals(HexFormat.of().formatHex(digest), testVector["output"], "balloon should return correct hash")
+            assertEquals(
+                bh.balloonMHash(testVector["password"] as String, testVector["salt"] as String),
+                HexFormat.of()
+                    .formatHex(bh.balloonM(testVector["password"] as String, testVector["salt"] as String, 16, 20, 4, 4))
+            )
+            assertTrue(
+                bh.verifyM(
+                    testVector["output"] as String,
+                    testVector["password"] as String,
+                    testVector["salt"] as String,
+                    testVector["spaceCost"] as Int,
+                    testVector["timeCost"] as Int,
+                    testVector["parallelCost"] as Int
+                )
+            )
+            assertFalse(
+                bh.verifyM(
+                    "0".repeat(64),
+                    testVector["password"] as String,
+                    testVector["salt"] as String,
+                    testVector["spaceCost"] as Int,
+                    testVector["timeCost"] as Int,
+                    testVector["parallelCost"] as Int
+                )
+            )
+        }
+    }
 }

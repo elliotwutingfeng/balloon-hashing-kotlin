@@ -16,7 +16,7 @@ plugins {
 
     // For Code coverage metrics
     jacoco
-    id("com.github.nbaztec.coveralls-jacoco") version "1.2.15"
+    id("com.github.nbaztec.coveralls-jacoco") version "1.2.16"
 }
 
 repositories {

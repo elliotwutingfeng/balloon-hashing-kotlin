@@ -65,6 +65,7 @@ println(HexFormat.of().formatHex(balloon(password, salt, spaceCost, timeCost, de
 
 ## References
 
+* [Dart implementation](https://github.com/elliotwutingfeng/balloon_hashing)
 * [Julia implementation](https://github.com/elliotwutingfeng/BalloonHashing.jl)
 * [Python implementation](https://github.com/nachonavarro/balloon-hashing)
 * [Ruby implementation](https://github.com/elliotwutingfeng/balloon-hashing)
